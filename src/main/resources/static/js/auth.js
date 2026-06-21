@@ -3,7 +3,7 @@
 // Dynamically select API URL (localhost vs live production backend)
 const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? ""
-    : "https://lcf-backend.onrender.com"; // <-- REPLACE with your actual deployed backend URL (Render, Railway, etc.)
+    : "https://lcf-aryan.onrender.com";
 
 // Check if authenticated
 function isLoggedIn() {
