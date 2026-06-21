@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Local Service Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <style>
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 40px 0;
+        }
+        .register-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <div class="register-card">
+            <div class="text-center mb-4">
+                <a class="navbar-brand d-inline-flex align-items-center mb-3 fs-3" href="index.html">
+                    <i class="bi bi-briefcase-fill me-2 text-primary"></i>
+                    <span class="fw-bold text-dark">LocalFinder</span>
+                </a>
+                <h4 class="fw-bold mb-1">Create Account</h4>
+                <p class="text-muted small">Connect with clients or start booking services</p>
+            </div>
+
+            <div id="alertBox" class="alert alert-danger d-none" role="alert"></div>
+            <div id="successBox" class="alert alert-success d-none" role="alert"></div>
+
+            <form id="registerForm">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="fullName" class="form-label small fw-bold text-muted">FULL NAME</label>
+                        <input type="text" class="form-control form-control-custom" id="fullName" placeholder="e.g. John Doe" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label small fw-bold text-muted">PHONE NUMBER</label>
+                        <input type="text" class="form-control form-control-custom" id="phone" placeholder="e.g. +1234567890" required>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="email" class="form-label small fw-bold text-muted">EMAIL ADDRESS</label>
+                        <input type="email" class="form-control form-control-custom" id="email" placeholder="name@example.com" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="password" class="form-label small fw-bold text-muted">PASSWORD</label>
+                        <input type="password" class="form-control form-control-custom" id="password" placeholder="Min. 6 characters" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="role" class="form-label small fw-bold text-muted">I WANT TO REGISTER AS A</label>
+                    <select class="form-select form-control-custom" id="role" onchange="toggleRoleFields()" required>
+                        <option value="USER">Customer (Look for services)</option>
+                        <option value="PROVIDER">Service Provider (List my services)</option>
+                    </select>
+                </div>
+
+                <!-- Provider specific fields -->
+                <div id="providerFields" class="d-none">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3 text-primary">Service Provider Details</h5>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="businessName" class="form-label small fw-bold text-muted">BUSINESS NAME</label>
+                            <input type="text" class="form-control form-control-custom" id="businessName" placeholder="e.g. John Plumbing Solutions">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="yearsOfExperience" class="form-label small fw-bold text-muted">YEARS OF EXPERIENCE</label>
+                            <input type="number" class="form-control form-control-custom" id="yearsOfExperience" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="whatsappNumber" class="form-label small fw-bold text-muted">WHATSAPP NUMBER</label>
+                            <input type="text" class="form-control form-control-custom" id="whatsappNumber" placeholder="e.g. +1234567890">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="city" class="form-label small fw-bold text-muted">CITY</label>
+                            <input type="text" class="form-control form-control-custom" id="city" placeholder="e.g. New York">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label small fw-bold text-muted">BUSINESS ADDRESS</label>
+                        <input type="text" class="form-control form-control-custom" id="address" placeholder="e.g. 123 Main St, Apt 4">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="bio" class="form-label small fw-bold text-muted">BIO / BUSINESS DESCRIPTION</label>
+                        <textarea class="form-control form-control-custom" id="bio" rows="3" placeholder="Tell customers about your services, pricing guidelines, and schedule..."></textarea>
+                    </div>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-lg">Sign Up</button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted small mb-0">Already have an account? <a href="login.html" class="fw-bold text-primary text-decoration-none">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script loading -->
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const role = urlParams.get('role');
+            if (role === 'PROVIDER' || role === 'provider') {
+                document.getElementById("role").value = 'PROVIDER';
+                toggleRoleFields();
+            }
+        });
+
+        function toggleRoleFields() {
+            const role = document.getElementById("role").value;
+            const providerFields = document.getElementById("providerFields");
+            
+            if (role === "PROVIDER") {
+                providerFields.classList.remove("d-none");
+                // Make provider elements required
+                document.getElementById("businessName").required = true;
+                document.getElementById("city").required = true;
+                document.getElementById("whatsappNumber").required = true;
+            } else {
+                providerFields.classList.add("d-none");
+                // Remove required status
+                document.getElementById("businessName").required = false;
+                document.getElementById("city").required = false;
+                document.getElementById("whatsappNumber").required = false;
+            }
+        }
+
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const alertBox = document.getElementById("alertBox");
+            const successBox = document.getElementById("successBox");
+            alertBox.classList.add("d-none");
+            successBox.classList.add("d-none");
+
+            const payload = {
+                fullName: document.getElementById("fullName").value,
+                phone: document.getElementById("phone").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value,
+                role: document.getElementById("role").value
+            };
+
+            if (payload.role === "PROVIDER") {
+                payload.businessName = document.getElementById("businessName").value;
+                payload.yearsOfExperience = parseInt(document.getElementById("yearsOfExperience").value) || 0;
+                payload.whatsappNumber = document.getElementById("whatsappNumber").value;
+                payload.city = document.getElementById("city").value;
+                payload.address = document.getElementById("address").value;
+                payload.bio = document.getElementById("bio").value;
+            }
+
+            fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => { throw new Error(err.error || "Registration failed") });
+                }
+                return res.json();
+            })
+            .then(data => {
+                successBox.textContent = "Account created successfully! Redirecting to login...";
+                successBox.classList.remove("d-none");
+                document.getElementById("registerForm").reset();
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 2000);
+            })
+            .catch(err => {
+                alertBox.textContent = err.message;
+                alertBox.classList.remove("d-none");
+            });
+        });
+    </script>
+</body>
+</html>

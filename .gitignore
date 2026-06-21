@@ -1,0 +1,21 @@
+# Local configurations and credentials
+.env
+*.log
+
+# Java and Maven build output
+target/
+.jdk/
+.maven/
+
+# IDE directories and files
+.idea/
+.vscode/
+*.iml
+.settings/
+.classpath
+.project
+.factorypath
+
+# OS files
+Thumbs.db
+Desktop.ini

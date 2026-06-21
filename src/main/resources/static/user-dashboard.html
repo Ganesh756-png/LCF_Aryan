@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Local Service Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-briefcase-fill me-2 fs-3 text-primary"></i>
+                <span>LocalFinder</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link px-3" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-3 active" href="#">Dashboard</a></li>
+                </ul>
+                <ul class="navbar-nav align-items-center" id="navAuthSection">
+                    <!-- Dynamically loaded -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3 mb-4">
+                <div class="dashboard-card text-center mb-3">
+                    <img id="userAvatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" class="rounded-circle mb-3 border border-3 border-primary" width="100" height="100" style="object-fit: cover;">
+                    <h5 id="userNameLabel" class="fw-bold mb-1">Customer Name</h5>
+                    <p class="text-muted small">Customer Account</p>
+                </div>
+                <div class="list-group list-group-flush shadow-sm rounded-4 overflow-hidden border">
+                    <a href="#" class="list-group-item list-group-item-action active p-3" onclick="showTab('bookingsTab', this)">
+                        <i class="bi bi-calendar2-week me-2"></i>My Bookings
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action p-3" onclick="showTab('profileTab', this)">
+                        <i class="bi bi-person-gear me-2"></i>Edit Profile
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action p-3" onclick="showTab('feedbackTab', this)">
+                        <i class="bi bi-chat-left-dots me-2"></i>Support Tickets
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Bookings Tab -->
+                <div id="bookingsTab" class="dashboard-tab animate-fade-in">
+                    <h4 class="fw-bold mb-4">Booking History</h4>
+                    <div id="bookingsList" class="row g-3">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading bookings...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Tab -->
+                <div id="profileTab" class="dashboard-tab d-none animate-fade-in">
+                    <h4 class="fw-bold mb-4">Profile Settings</h4>
+                    <div class="card p-4 border rounded-4 shadow-sm">
+                        <div id="profileAlert" class="alert alert-success d-none"></div>
+                        <form id="profileForm">
+                            <div class="mb-3">
+                                <label for="profileName" class="form-label small fw-bold text-muted">FULL NAME</label>
+                                <input type="text" class="form-control form-control-custom" id="profileName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="profilePhone" class="form-label small fw-bold text-muted">PHONE NUMBER</label>
+                                <input type="text" class="form-control form-control-custom" id="profilePhone" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="profileImage" class="form-label small fw-bold text-muted">AVATAR IMAGE URL</label>
+                                <input type="url" class="form-control form-control-custom" id="profileImage" placeholder="https://example.com/avatar.jpg">
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4 rounded-pill">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Feedback Tab -->
+                <div id="feedbackTab" class="dashboard-tab d-none animate-fade-in">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold mb-0">Support Tickets</h4>
+                        <button class="btn btn-primary rounded-pill btn-sm px-3" data-bs-toggle="modal" data-bs-target="#feedbackModal">Create Ticket</button>
+                    </div>
+                    <div id="feedbackList" class="row g-3">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="ratingModalLabel">Rate Booking Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="ratingForm">
+                    <div class="modal-body py-4">
+                        <input type="hidden" id="rateBookingId">
+                        <div class="text-center mb-4">
+                            <label class="form-label d-block text-muted small fw-bold mb-2">TAP TO RATE</label>
+                            <div class="rating-stars fs-1 text-muted" style="cursor: pointer;">
+                                <i class="bi bi-star rating-star" data-value="1"></i>
+                                <i class="bi bi-star rating-star" data-value="2"></i>
+                                <i class="bi bi-star rating-star" data-value="3"></i>
+                                <i class="bi bi-star rating-star" data-value="4"></i>
+                                <i class="bi bi-star rating-star" data-value="5"></i>
+                            </div>
+                            <input type="hidden" id="ratingValue" value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="comments" class="form-label small fw-bold text-muted">YOUR COMMENTS</label>
+                            <textarea class="form-control form-control-custom" id="comments" rows="3" placeholder="Share your experience with this provider..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Submit Rating</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="feedbackModalLabel">Submit Helpdesk Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="feedbackForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="ticketSubject" class="form-label small fw-bold text-muted">SUBJECT</label>
+                            <input type="text" class="form-control form-control-custom" id="ticketSubject" placeholder="e.g. Complaint about John Plumber, Payment query..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ticketMessage" class="form-label small fw-bold text-muted">EXPLAIN YOUR CONCERN</label>
+                            <textarea class="form-control form-control-custom" id="ticketMessage" rows="4" placeholder="Detail your complaint or feedback clearly..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Send Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Guard route for USER
+        guardRoute("USER");
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadUserProfile();
+            loadUserBookings();
+            loadUserTickets();
+
+            // Set up star selector logic
+            const stars = document.querySelectorAll(".rating-star");
+            stars.forEach(star => {
+                star.addEventListener("click", function() {
+                    const value = parseInt(this.getAttribute("data-value"));
+                    document.getElementById("ratingValue").value = value;
+                    updateStars(value);
+                });
+            });
+
+            // Handle Profile Submission
+            document.getElementById("profileForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                updateProfileData();
+            });
+
+            // Handle Review Submission
+            document.getElementById("ratingForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                submitReview();
+            });
+
+            // Handle Feedback Submission
+            document.getElementById("feedbackForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                submitFeedbackTicket();
+            });
+        });
+
+        function showTab(tabId, el) {
+            // Hide all tabs
+            document.querySelectorAll(".dashboard-tab").forEach(tab => tab.classList.add("d-none"));
+            // Show target tab
+            document.getElementById(tabId).classList.remove("d-none");
+
+            // Deactivate all sidebar items
+            el.parentElement.querySelectorAll(".list-group-item").forEach(item => item.classList.remove("active"));
+            // Activate current
+            el.classList.add("active");
+        }
+
+        function loadUserProfile() {
+            fetch("/api/user/profile", { headers: getHeaders() })
+                .then(res => res.json())
+                .then(user => {
+                    document.getElementById("userNameLabel").textContent = user.fullName;
+                    document.getElementById("profileName").value = user.fullName;
+                    document.getElementById("profilePhone").value = user.phone || "";
+                    document.getElementById("profileImage").value = user.profileImage || "";
+                    if (user.profileImage) {
+                        document.getElementById("userAvatar").src = user.profileImage;
+                    }
+                });
+        }
+
+        function loadUserBookings() {
+            fetch("/api/user/bookings", { headers: getHeaders() })
+                .then(res => {
+                    if (!res.ok) throw new Error("API Offline");
+                    return res.json();
+                })
+                .then(bookings => {
+                    const simulated = JSON.parse(localStorage.getItem("ls_simulated_bookings") || "[]");
+                    const allBookings = [...bookings, ...simulated];
+                    renderBookingsDOM(allBookings);
+                })
+                .catch(err => {
+                    console.warn("Using local simulated bookings fallback (Demo Mode):", err);
+                    const simulated = JSON.parse(localStorage.getItem("ls_simulated_bookings") || "[]");
+                    renderBookingsDOM(simulated);
+                });
+        }
+
+        function renderBookingsDOM(bookings) {
+            const list = document.getElementById("bookingsList");
+            list.innerHTML = "";
+
+            if (bookings.length === 0) {
+                list.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-calendar2-x fs-1 text-muted mb-2"></i>
+                        <h6 class="text-muted">You have no booked services yet.</h6>
+                        <a href="index.html" class="btn btn-primary rounded-pill px-4 mt-2">Find a Service</a>
+                    </div>
+                `;
+                return;
+            }
+
+            bookings.forEach(b => {
+                let statusClass = "badge-pending";
+                if (b.status === "ACCEPTED") statusClass = "badge-accepted";
+                else if (b.status === "COMPLETED") statusClass = "badge-completed";
+                else if (b.status === "CANCELLED") statusClass = "badge-cancelled";
+                else if (b.status === "REJECTED") statusClass = "badge-rejected";
+
+                let actionBtn = "";
+                if (b.status === "PENDING" || b.status === "ACCEPTED") {
+                    actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="cancelBooking(${b.id})">Cancel</button>`;
+                } else if (b.status === "COMPLETED") {
+                    actionBtn = `<button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openRatingModal(${b.id})"><i class="bi bi-star-fill me-1"></i>Rate Service</button>`;
+                }
+
+                const card = `
+                    <div class="col-12">
+                        <div class="card p-4 border rounded-4 shadow-sm animate-fade-in">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <span class="badge ${statusClass} px-3 py-2 rounded-pill mb-2">${b.status}</span>
+                                    <h5 class="fw-bold mb-1">${b.service.title}</h5>
+                                    <p class="text-muted small mb-1"><i class="bi bi-person me-1"></i>Provider: <strong>${b.service.provider ? (b.service.provider.businessName || b.service.provider.user.fullName) : "Verified Provider"}</strong></p>
+                                    <p class="text-muted small mb-0"><i class="bi bi-calendar2-event me-1"></i>Schedule Date: ${new Date(b.bookingDate).toLocaleString()}</p>
+                                </div>
+                                <div class="col-md-3 text-md-center py-2 py-md-0">
+                                    <span class="text-muted small d-block">TOTAL PRICE</span>
+                                    <h4 class="fw-bold text-primary mb-0">₹${b.totalPrice}</h4>
+                                </div>
+                                <div class="col-md-3 text-md-end">
+                                    ${actionBtn}
+                                </div>
+                            </div>
+                            ${b.notes ? `<div class="mt-3 p-2 bg-light rounded text-muted small"><i class="bi bi-sticky me-2"></i>Notes: ${b.notes}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += card;
+            });
+        }
+
+        function cancelBooking(id) {
+            if (!confirm("Are you sure you want to cancel this booking?")) return;
+
+            // Check if it's a simulated booking first
+            const simulated = JSON.parse(localStorage.getItem("ls_simulated_bookings") || "[]");
+            const simIndex = simulated.findIndex(b => b.id == id);
+            if (simIndex !== -1) {
+                simulated[simIndex].status = "CANCELLED";
+                localStorage.setItem("ls_simulated_bookings", JSON.stringify(simulated));
+                alert("Simulated booking cancelled successfully.");
+                loadUserBookings();
+                return;
+            }
+
+            fetch(`/api/user/bookings/${id}/cancel`, {
+                method: "PUT",
+                headers: getHeaders()
+            })
+            .then(res => res.json())
+            .then(() => {
+                loadUserBookings();
+            })
+            .catch(err => {
+                console.warn("API Offline, reloading bookings.");
+                loadUserBookings();
+            });
+        }
+
+        function openRatingModal(bookingId) {
+            document.getElementById("rateBookingId").value = bookingId;
+            document.getElementById("comments").value = "";
+            document.getElementById("ratingValue").value = 5;
+            updateStars(5);
+            new bootstrap.Modal(document.getElementById('ratingModal')).show();
+        }
+
+        function updateStars(val) {
+            const stars = document.querySelectorAll(".rating-star");
+            stars.forEach((star, index) => {
+                if (index < val) {
+                    star.classList.remove("bi-star");
+                    star.classList.add("bi-star-fill");
+                    star.style.color = "#f59e0b";
+                } else {
+                    star.classList.remove("bi-star-fill");
+                    star.classList.add("bi-star");
+                    star.style.color = "";
+                }
+            });
+        }
+
+        function submitReview() {
+            const bookingId = document.getElementById("rateBookingId").value;
+            const ratingValue = parseInt(document.getElementById("ratingValue").value);
+            const comments = document.getElementById("comments").value;
+
+            fetch(`/api/user/bookings/${bookingId}/rate`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify({ ratingValue, comments })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Rating already submitted or error occurred.");
+                return res.json();
+            })
+            .then(() => {
+                bootstrap.Modal.getInstance(document.getElementById('ratingModal')).hide();
+                loadUserBookings();
+            })
+            .catch(err => alert(err.message));
+        }
+
+        function loadUserTickets() {
+            fetch("/api/admin/feedback", { headers: getHeaders() })
+                .then(res => res.json())
+                .then(tickets => {
+                    // Filter feedback belonging to logged-in user
+                    const user = getUser();
+                    const list = document.getElementById("feedbackList");
+                    list.innerHTML = "";
+
+                    const myTickets = tickets.filter(t => t.user.id === user.id);
+
+                    if (myTickets.length === 0) {
+                        list.innerHTML = `<p class="text-center text-muted py-5">You haven't submitted any complaints or ticket requests yet.</p>`;
+                        return;
+                    }
+
+                    myTickets.forEach(t => {
+                        const statusClass = t.status === "PENDING" ? "badge bg-warning-subtle text-warning" : "badge bg-success-subtle text-success";
+                        const item = `
+                            <div class="col-12">
+                                <div class="card p-3 border rounded-3 shadow-sm animate-fade-in">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="fw-bold mb-0">${t.subject}</h6>
+                                        <span class="${statusClass} px-2 py-1 rounded">${t.status}</span>
+                                    </div>
+                                    <p class="text-muted small mb-1">${t.message}</p>
+                                    <span class="text-muted small text-end d-block" style="font-size:0.75rem;">Created At: ${new Date(t.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `;
+                        list.innerHTML += item;
+                    });
+                });
+        }
+
+        function submitFeedbackTicket() {
+            const subject = document.getElementById("ticketSubject").value;
+            const message = document.getElementById("ticketMessage").value;
+
+            fetch("/api/user/feedback", {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify({ subject, message })
+            })
+            .then(res => res.json())
+            .then(() => {
+                bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+                document.getElementById("feedbackForm").reset();
+                loadUserTickets();
+            })
+            .catch(err => alert(err.message));
+        }
+
+        function updateProfileData() {
+            const fullName = document.getElementById("profileName").value;
+            const phone = document.getElementById("profilePhone").value;
+            const profileImage = document.getElementById("profileImage").value;
+
+            fetch("/api/user/profile", {
+                method: "PUT",
+                headers: getHeaders(),
+                body: JSON.stringify({ fullName, phone, profileImage })
+            })
+            .then(res => res.json())
+            .then(updated => {
+                // Update local storage user name representation
+                const user = getUser();
+                user.name = updated.fullName;
+                localStorage.setItem("ls_user", JSON.stringify(user));
+
+                // Notify UI
+                const alert = document.getElementById("profileAlert");
+                alert.textContent = "Profile updated successfully!";
+                alert.classList.remove("d-none");
+                setTimeout(() => alert.classList.add("d-none"), 3000);
+
+                loadUserProfile();
+            });
+        }
+    </script>
+</body>
+</html>

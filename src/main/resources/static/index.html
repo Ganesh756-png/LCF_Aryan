@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Service Finder - Find Professionals Near You</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-briefcase-fill me-2 fs-3 text-primary"></i>
+                <span>LocalFinder</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link px-3" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#categoriesSection">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="#howItWorks">How it Works</a></li>
+                    <li class="nav-item"><a class="nav-link px-3 text-success fw-semibold" href="register.html?role=PROVIDER"><i class="bi bi-shop me-1"></i>List Your Business</a></li>
+                </ul>
+                <ul class="navbar-nav align-items-center" id="navAuthSection">
+                    <!-- Loaded dynamically via auth.js -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="hero-section">
+        <div class="container text-center py-5">
+            <h1 class="display-4 fw-bold mb-3 animate-fade-in">Find Trusted Local Professionals</h1>
+            <p class="lead mb-4 opacity-90">Book expert Plumbers, Electricians, Tutors, Cleaners, and more instantly.</p>
+            <div class="mt-4 mb-2 animate-fade-in">
+                <a href="#categoriesSection" class="btn btn-light btn-lg rounded-pill px-4 me-3 shadow fw-semibold text-primary">Book a Service</a>
+                <a href="register.html?role=PROVIDER" class="btn btn-outline-light btn-lg rounded-pill px-4 shadow fw-semibold"><i class="bi bi-briefcase me-2"></i>Join as Service Provider</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="search-box-container animate-fade-in">
+                    <form id="searchForm" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold">WHAT SERVICE DO YOU NEED?</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="searchQuery" class="form-control form-control-custom border-start-0" placeholder="e.g. Leak repair, Switch fix...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-bold">CATEGORY</label>
+                            <select id="searchCategory" class="form-select form-control-custom">
+                                <option value="">All Categories</option>
+                                <!-- Categories dynamically loaded -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-bold">LOCATION (CITY)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-geo-alt text-muted"></i></span>
+                                <input type="text" id="searchCity" class="form-control form-control-custom border-start-0" placeholder="e.g. New York">
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <label class="form-label d-none d-md-block opacity-0">Search</label>
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-lg d-flex align-items-center justify-content-center">
+                                <i class="bi bi-search me-2"></i>Find
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Premium Services Section -->
+    <section id="premiumServicesSection" class="container py-5">
+        <div class="text-center mb-5">
+            <span class="badge bg-warning-subtle text-warning px-3 py-2 rounded-pill fw-bold text-uppercase mb-2"><i class="bi bi-star-fill me-1"></i>Exclusive Offerings</span>
+            <h2 class="fw-bold"><span class="section-premium-title">Featured Premium Services</span></h2>
+            <p class="text-muted">Directly book top-rated, certified service experts with instant feedback.</p>
+        </div>
+        <div class="row g-4" id="premiumServicesGrid">
+            <!-- Loaded dynamically -->
+            <div class="text-center py-5">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Loading premium services...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Grid Section -->
+    <section id="categoriesSection" class="container py-5">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-uppercase mb-2">Explore</span>
+            <h2 class="fw-bold">Browse by Service Category</h2>
+            <p class="text-muted">Select a category below to browse and contact verified service experts.</p>
+        </div>
+        <div class="row g-4" id="categoriesGrid">
+            <!-- Loaded dynamically from API -->
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading categories...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Results / Listings Section -->
+    <section id="listingsSection" class="container py-5 d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Matching Services</h3>
+            <button class="btn btn-sm btn-outline-secondary" onclick="resetSearch()"><i class="bi bi-arrow-left me-1"></i>Back to Categories</button>
+        </div>
+        
+        <!-- Map Container -->
+        <div class="row mb-4 animate-fade-in">
+            <div class="col-12">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="servicesListings">
+            <!-- Filtered listings displayed here -->
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="howItWorks" class="bg-light py-5 mt-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">How LocalFinder Works</h2>
+                <p class="text-muted">Get your job done in three easy steps.</p>
+            </div>
+            <div class="row g-4 text-center">
+                <div class="col-md-4">
+                    <div class="p-4 card border-0 h-100 shadow-sm rounded-4">
+                        <div class="fs-1 text-primary mb-3"><i class="bi bi-search"></i></div>
+                        <h5 class="fw-bold">1. Search & Filter</h5>
+                        <p class="text-muted mb-0">Search services by category, location, and key requirements to identify matching experts.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 card border-0 h-100 shadow-sm rounded-4">
+                        <div class="fs-1 text-primary mb-3"><i class="bi bi-chat-text"></i></div>
+                        <h5 class="fw-bold">2. View & Contact</h5>
+                        <p class="text-muted mb-0">Read profile details, average star ratings, review notes, and chat directly via phone or WhatsApp.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 card border-0 h-100 shadow-sm rounded-4">
+                        <div class="fs-1 text-primary mb-3"><i class="bi bi-calendar2-check"></i></div>
+                        <h5 class="fw-bold">3. Book Service</h5>
+                        <p class="text-muted mb-0">Confirm pricing rates, schedule a date, and book online. Receive updates via email notifications.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container text-center">
+            <p class="mb-2"><i class="bi bi-briefcase-fill text-primary fs-3"></i></p>
+            <h5 class="fw-bold mb-3">Local Service Finder</h5>
+            <p class="text-muted small">Connecting customers with verified professional service providers instantly.</p>
+            <hr class="opacity-20 my-4">
+            <p class="text-muted small mb-0">&copy; 2026 Local Service Finder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & Custom Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Home page operations
+        document.addEventListener("DOMContentLoaded", function() {
+            loadCategories();
+            loadPremiumServices();
+
+            document.getElementById("searchForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+        });
+
+        let categoriesList = [];
+        let mapInstance = null;
+        let mapMarkers = [];
+
+        const cityCoords = {
+            'delhi': [28.6139, 77.2090],
+            'mumbai': [19.0760, 72.8777],
+            'bengaluru': [12.9716, 77.5946],
+            'bangalore': [12.9716, 77.5946],
+            'chennai': [13.0827, 80.2707],
+            'hyderabad': [17.3850, 78.4867],
+            'pune': [18.5204, 73.8567],
+            'kolkata': [22.5726, 88.3639],
+            'jaipur': [26.9124, 75.7873],
+            'ahmedabad': [23.0225, 72.5714]
+        };
+
+        function getCoordinatesForProvider(provider) {
+            const city = (provider.city || 'Delhi').toLowerCase().trim();
+            let base = [28.6139, 77.2090]; // Default Delhi center
+            let zoom = 12;
+            
+            let found = false;
+            for (const key in cityCoords) {
+                if (city.includes(key)) {
+                    base = cityCoords[key];
+                    found = true;
+                    break;
+                }
+            }
+            
+            // Add a small deterministic offset based on the provider id / business name
+            const str = provider.id + (provider.businessName || '');
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            
+            // Convert hash to a range between -0.015 and +0.015 degrees (approx 1.5km offset)
+            const latOffset = ((hash & 0xFF) / 255 - 0.5) * 0.03;
+            const lngOffset = (((hash >> 8) & 0xFF) / 255 - 0.5) * 0.03;
+            
+            return {
+                coords: [base[0] + latOffset, base[1] + lngOffset],
+                zoom: found ? 12 : 5
+            };
+        }
+
+        function initMap(lat, lng, zoom) {
+            if (mapInstance) {
+                mapInstance.setView([lat, lng], zoom);
+                return;
+            }
+            
+            mapInstance = L.map('map').setView([lat, lng], zoom);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(mapInstance);
+        }
+
+        // Mock Data for Demo Mode (if API/Database connection is offline)
+        const mockCategories = [
+            { id: 1, name: "Plumbing", iconClass: "bi bi-droplet-fill", description: "Leaking taps, toilet repairs, pipe installations, and drainage solutions", imageUrl: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500&auto=format&fit=crop&q=60" },
+            { id: 2, name: "Electrical", iconClass: "bi bi-lightning-charge-fill", description: "Wiring, switch replacements, appliance installation, and safety checks", imageUrl: "https://images.unsplash.com/photo-1621905252507-b354bc25edac?w=500&auto=format&fit=crop&q=60" },
+            { id: 3, name: "Cleaning", iconClass: "bi bi-stars", description: "Deep home cleaning, kitchen sanitization, sofa cleaning, and carpet washing", imageUrl: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&auto=format&fit=crop&q=60" },
+            { id: 4, name: "Carpentry", iconClass: "bi bi-tools", description: "Furniture repairs, woodwork, cabinet installations, and door fixes", imageUrl: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=500&auto=format&fit=crop&q=60" },
+            { id: 5, name: "Painting", iconClass: "bi bi-paint-bucket", description: "Interior and exterior house painting, wall stenciling, and wallpapering", imageUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&auto=format&fit=crop&q=60" },
+            { id: 6, name: "Tutors", iconClass: "bi bi-book-half", description: "Academic tutoring, music classes, languages, and technical training", imageUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=500&auto=format&fit=crop&q=60" },
+            { id: 7, name: "Mechanics", iconClass: "bi bi-wrench-adjustable", description: "Car servicing, bike repairs, roadside assistance, and battery changes", imageUrl: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=500&auto=format&fit=crop&q=60" },
+            { id: 8, name: "AC Repair", iconClass: "bi bi-wind", description: "AC servicing, gas refilling, filter cleaning, and compressor repair", imageUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=500&auto=format&fit=crop&q=60" }
+        ];
+
+        const mockServices = [
+            {
+                id: 101,
+                title: "Emergency Pipe Leak Repair",
+                priceRate: 300.00,
+                duration: "Per Hour",
+                isPremium: true,
+                description: "Emergency repair of burst pipes, leaking faucets, clogged drains, and bathroom toilet leakages. Fast response.",
+                category: { id: 1, name: "Plumbing", imageUrl: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500" },
+                provider: {
+                    id: "bb78e762-b2d9-48bb-bb83-8a39e9921f67",
+                    businessName: "Rajesh Plumbing Solutions",
+                    city: "Delhi",
+                    whatsappNumber: "9876543210",
+                    user: { fullName: "Rajesh Kumar", profileImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150" }
+                }
+            },
+            {
+                id: 102,
+                title: "Modern Water Heater Installation",
+                priceRate: 1200.00,
+                duration: "Fixed Price",
+                isPremium: false,
+                description: "Installation of modern instant water heaters or standard storage geysers. Includes safety valves and electrical check.",
+                category: { id: 1, name: "Plumbing", imageUrl: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500" },
+                provider: {
+                    id: "bb78e762-b2d9-48bb-bb83-8a39e9921f67",
+                    businessName: "Rajesh Plumbing Solutions",
+                    city: "Delhi",
+                    whatsappNumber: "9876543210",
+                    user: { fullName: "Rajesh Kumar", profileImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150" }
+                }
+            },
+            {
+                id: 201,
+                title: "Smart Home Switch Installation",
+                priceRate: 800.00,
+                duration: "Fixed Price",
+                isPremium: true,
+                description: "Configure and install smart switches, voice-controlled lighting systems, automated dimmers, and custom wiring panels.",
+                category: { id: 2, name: "Electrical", imageUrl: "https://images.unsplash.com/photo-1621905252507-b354bc25edac?w=500" },
+                provider: {
+                    id: "cc78e762-b2d9-48bb-bb83-8a39e9921f68",
+                    businessName: "Sparky Electrical Solutions",
+                    city: "Mumbai",
+                    whatsappNumber: "9876543220",
+                    user: { fullName: "Amit Sharma", profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" }
+                }
+            },
+            {
+                id: 301,
+                title: "Full 3BHK Home Deep Cleaning",
+                priceRate: 3500.00,
+                duration: "Fixed Price",
+                isPremium: true,
+                description: "Complete vacuuming, kitchen scrubbing, bathroom sanitization, floor dusting, sofa steam clean, and window washing.",
+                category: { id: 3, name: "Cleaning", imageUrl: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500" },
+                provider: {
+                    id: "dd78e762-b2d9-48bb-bb83-8a39e9921f70",
+                    businessName: "Kiran Deep Cleaning Services",
+                    city: "Bengaluru",
+                    whatsappNumber: "9876543230",
+                    user: { fullName: "Kiran Rao", profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" }
+                }
+            },
+            {
+                id: 601,
+                title: "Maths & Science Home Tuition",
+                priceRate: 500.00,
+                duration: "Per Hour",
+                isPremium: false,
+                description: "Personal tutoring for Calculus, Algebra, Geometry, and high school science prep. Weekly worksheets and mock exams.",
+                category: { id: 6, name: "Tutors", imageUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=500" },
+                provider: {
+                    id: "ee78e762-b2d9-48bb-bb83-8a39e9921f71",
+                    businessName: "Sunita Academy Home Tutors",
+                    city: "Chennai",
+                    whatsappNumber: "9876543240",
+                    user: { fullName: "Sunita Singh", profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" }
+                }
+            }
+        ];
+
+        function loadCategories() {
+            fetch("/api/categories")
+                .then(res => res.json())
+                .then(data => {
+                    categoriesList = data;
+                    renderCategoriesDOM(data);
+                })
+                .catch(err => {
+                    console.warn("Using local categories fallback (Demo Mode):", err);
+                    categoriesList = mockCategories;
+                    renderCategoriesDOM(mockCategories);
+                });
+        }
+
+        function loadPremiumServices() {
+            fetch("/api/services/search")
+                .then(res => res.json())
+                .then(services => {
+                    const premium = services.filter(s => s.isPremium || s.is_premium);
+                    renderPremiumDOM(premium);
+                })
+                .catch(err => {
+                    console.warn("Using local premium services fallback (Demo Mode):", err);
+                    const premium = mockServices.filter(s => s.isPremium);
+                    renderPremiumDOM(premium);
+                });
+        }
+
+        function renderPremiumDOM(services) {
+            const grid = document.getElementById("premiumServicesGrid");
+            grid.innerHTML = "";
+
+            if (!services || services.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted">No premium services currently listed. Check back soon!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            services.forEach(srv => {
+                const isPrem = srv.isPremium || srv.is_premium;
+                const priceSymbol = "₹";
+                
+                const item = `
+                    <div class="col-md-6 col-lg-4 animate-fade-in">
+                        <div class="provider-card premium-card">
+                            <div class="provider-img-container">
+                                <img src="${srv.category.imageUrl || 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500'}" class="provider-img" alt="service">
+                                <span class="provider-badge premium-badge"><i class="bi bi-gem me-1"></i>Premium</span>
+                            </div>
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="fw-bold mb-0">${srv.title}</h5>
+                                    <span class="fw-bold text-warning fs-5">${priceSymbol}${srv.priceRate} <span class="small text-muted font-normal" style="font-size: 0.75rem;">/${srv.duration}</span></span>
+                                </div>
+                                <p class="text-muted small mb-3">${srv.description ? srv.description.substring(0, 100) + '...' : ''}</p>
+                                <hr class="my-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="${srv.provider.user.profileImage || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="rounded-circle me-2" width="36" height="36" style="object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-0 small fw-bold">${srv.provider.businessName || srv.provider.user.fullName}<i class="bi bi-patch-check-fill verified-badge"></i></h6>
+                                            <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${srv.provider.city}</span>
+                                        </div>
+                                    </div>
+                                    <a href="provider-profile.html?id=${srv.provider.id}" class="btn btn-sm btn-premium rounded-pill px-3">View Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += item;
+            });
+        }
+
+        function renderCategoriesDOM(data) {
+            const grid = document.getElementById("categoriesGrid");
+            const select = document.getElementById("searchCategory");
+
+            grid.innerHTML = "";
+            select.innerHTML = '<option value="">All Categories</option>';
+
+            data.forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat.id;
+                opt.textContent = cat.name;
+                select.appendChild(opt);
+
+                const card = `
+                    <div class="col-6 col-md-4 col-lg-3 animate-fade-in">
+                        <div class="category-card" onclick="filterByCategory(${cat.id})">
+                            <div class="category-icon">
+                                <i class="${cat.iconClass || 'bi bi-tools'}"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">${cat.name}</h6>
+                            <p class="text-muted small mb-0">${cat.description ? cat.description.substring(0, 50) + '...' : ''}</p>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        function filterByCategory(id) {
+            document.getElementById("searchCategory").value = id;
+            performSearch();
+        }
+
+        function resetSearch() {
+            document.getElementById("searchForm").reset();
+            document.getElementById("categoriesSection").classList.remove("d-none");
+            document.getElementById("listingsSection").classList.add("d-none");
+        }
+
+        function performSearch() {
+            const query = document.getElementById("searchQuery").value;
+            const categoryId = document.getElementById("searchCategory").value;
+            const city = document.getElementById("searchCity").value;
+
+            let url = `/api/services/search?`;
+            if (query) url += `query=${encodeURIComponent(query)}&`;
+            if (categoryId) url += `categoryId=${categoryId}&`;
+            if (city) url += `city=${encodeURIComponent(city)}&`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(services => {
+                    renderServicesDOM(services);
+                })
+                .catch(err => {
+                    console.warn("Using local services search fallback (Demo Mode):", err);
+                    let filtered = mockServices;
+                    if (categoryId) {
+                        filtered = filtered.filter(s => s.category.id == categoryId);
+                    }
+                    if (city) {
+                        const searchCity = city.toLowerCase().trim();
+                        filtered = filtered.filter(s => s.provider.city.toLowerCase().includes(searchCity));
+                    }
+                    if (query) {
+                        const searchQ = query.toLowerCase().trim();
+                        filtered = filtered.filter(s => s.title.toLowerCase().includes(searchQ) || s.description.toLowerCase().includes(searchQ));
+                    }
+                    renderServicesDOM(filtered);
+                });
+        }
+
+        function renderServicesDOM(services) {
+            document.getElementById("categoriesSection").classList.add("d-none");
+            const listingsSection = document.getElementById("listingsSection");
+            listingsSection.classList.remove("d-none");
+
+            const container = document.getElementById("servicesListings");
+            container.innerHTML = "";
+
+            // Render Map first
+            const searchedCity = (document.getElementById("searchCity").value || "").toLowerCase().trim();
+            let baseCoords = [28.6139, 77.2090]; // Default Delhi center
+            let zoomLevel = 12;
+            
+            let foundCity = false;
+            if (searchedCity) {
+                for (const key in cityCoords) {
+                    if (searchedCity.includes(key)) {
+                        baseCoords = cityCoords[key];
+                        zoomLevel = 12;
+                        foundCity = true;
+                        break;
+                    }
+                }
+            } else if (services.length > 0) {
+                const firstCity = (services[0].provider.city || "").toLowerCase().trim();
+                for (const key in cityCoords) {
+                    if (firstCity.includes(key)) {
+                        baseCoords = cityCoords[key];
+                        zoomLevel = 11;
+                        foundCity = true;
+                        break;
+                    }
+                }
+            }
+
+            initMap(baseCoords[0], baseCoords[1], foundCity ? zoomLevel : 5);
+
+            // Clear old markers
+            mapMarkers.forEach(m => mapInstance.removeLayer(m));
+            mapMarkers = [];
+
+            const latLngs = [];
+
+            if (services.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-emoji-frown fs-1 text-muted mb-3"></i>
+                        <h5>No matching services found</h5>
+                        <p class="text-muted">Try searching with different filters or keywords.</p>
+                    </div>
+                `;
+            } else {
+                services.forEach(srv => {
+                    const provInfo = srv.provider;
+                    if (!provInfo) return;
+
+                    const locInfo = getCoordinatesForProvider(provInfo);
+                    const coords = locInfo.coords;
+                    latLngs.push(coords);
+
+                    const isPrem = srv.isPremium || srv.is_premium;
+                    const priceSymbol = "₹";
+                    
+                    // Add Pin to Map
+                    const marker = L.marker(coords).addTo(mapInstance);
+                    const popupContent = `
+                        <div class="map-popup-card">
+                            <h6 class="mb-1">${provInfo.businessName || provInfo.user.fullName} ${isPrem ? '<i class="bi bi-patch-check-fill text-primary" style="font-size:0.9rem;"></i>' : ''}</h6>
+                            <p class="mb-1"><strong>${srv.title}</strong></p>
+                            <p class="fw-bold text-primary mb-1">${priceSymbol}${srv.priceRate} <span class="small text-muted font-normal">/${srv.duration}</span></p>
+                            <p class="mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${provInfo.city}</p>
+                            <div class="d-flex gap-2">
+                                <a href="provider-profile.html?id=${provInfo.id}" class="btn btn-primary btn-sm text-white rounded-pill px-2 py-0" style="font-size: 0.75rem; border: none;">Profile</a>
+                                <a href="https://wa.me/${provInfo.whatsappNumber || ''}" target="_blank" class="btn btn-whatsapp btn-sm text-white rounded-pill px-2 py-0" style="font-size: 0.75rem;"><i class="bi bi-whatsapp"></i> Chat</a>
+                            </div>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                    mapMarkers.push(marker);
+
+                    // Render Card HTML
+                    const cardClass = isPrem ? "provider-card premium-card" : "provider-card";
+                    const badgeClass = isPrem ? "provider-badge premium-badge" : "provider-badge";
+                    const badgeText = isPrem ? '<i class="bi bi-gem me-1"></i>Premium' : srv.category.name;
+                    const priceClass = isPrem ? "fw-bold text-warning" : "fw-bold text-primary";
+                    const verifiedTick = isPrem ? '<i class="bi bi-patch-check-fill verified-badge"></i>' : '';
+                    const btnClass = isPrem ? "btn btn-sm btn-premium rounded-pill px-3" : "btn btn-sm btn-primary rounded-pill px-3";
+
+                    const item = `
+                        <div class="col-md-6 col-lg-4 animate-fade-in">
+                            <div class="${cardClass}">
+                                <div class="provider-img-container">
+                                    <img src="${srv.category.imageUrl || 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=500'}" class="provider-img" alt="service">
+                                    <span class="${badgeClass}">${badgeText}</span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="fw-bold mb-0">${srv.title}</h5>
+                                        <span class="${priceClass}">${priceSymbol}${srv.priceRate} <span class="small text-muted font-normal" style="font-size: 0.75rem;">/${srv.duration}</span></span>
+                                    </div>
+                                    <p class="text-muted small mb-3">${srv.description ? srv.description.substring(0, 100) + '...' : ''}</p>
+                                    <hr class="my-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="${srv.provider.user.profileImage || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="rounded-circle me-2" width="36" height="36" style="object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0 small fw-bold">${srv.provider.businessName || srv.provider.user.fullName}${verifiedTick}</h6>
+                                                <span class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${srv.provider.city}</span>
+                                            </div>
+                                        </div>
+                                        <a href="provider-profile.html?id=${srv.provider.id}" class="${btnClass}">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += item;
+                });
+            }
+
+            // Adjust bounds if multiple locations exist
+            if (latLngs.length > 0 && !searchedCity) {
+                try {
+                    const bounds = L.latLngBounds(latLngs);
+                    mapInstance.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+                } catch (e) {
+                    console.error("Map bounds fitting failed:", e);
+                }
+            }
+
+            // Fix container render layout details
+            setTimeout(() => {
+                if (mapInstance) {
+                    mapInstance.invalidateSize();
+                }
+            }, 150);
+
+            listingsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

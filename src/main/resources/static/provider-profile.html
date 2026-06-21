@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Provider Profile - Local Service Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="bi bi-briefcase-fill me-2 fs-3 text-primary"></i>
+                <span>LocalFinder</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link px-3" href="index.html">Home</a></li>
+                </ul>
+                <ul class="navbar-nav align-items-center" id="navAuthSection">
+                    <!-- Dynamically loaded -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row">
+            <!-- Left Panel: Profile Detail Details -->
+            <div class="col-lg-4 mb-4">
+                <div class="card p-4 border rounded-4 shadow-sm text-center bg-white animate-fade-in">
+                    <img id="profileImage" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150" class="rounded-circle mb-3 border border-4 border-primary" width="120" height="120" style="object-fit: cover;">
+                    <h4 id="businessName" class="fw-bold mb-1">Business Name</h4>
+                    <p id="fullName" class="text-muted mb-3">Owner: Full Name</p>
+                    
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <div id="starsContainer" class="me-2">
+                            <!-- Stars loaded dynamically -->
+                        </div>
+                        <span id="ratingValLabel" class="fw-bold">0.0</span>
+                    </div>
+
+                    <p id="bio" class="text-muted small mb-4">Business biography detailing experience and pricing principles...</p>
+                    
+                    <hr class="my-4">
+
+                    <div class="text-start mb-4">
+                        <div class="d-flex mb-2">
+                            <i class="bi bi-geo-alt text-primary me-2 fs-5"></i>
+                            <div>
+                                <span class="text-muted small d-block">LOCATION</span>
+                                <strong id="locationLabel">City Name, Address</strong>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <i class="bi bi-award text-primary me-2 fs-5"></i>
+                            <div>
+                                <span class="text-muted small d-block">EXPERIENCE</span>
+                                <strong id="experienceLabel">0 Years</strong>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <i class="bi bi-telephone text-primary me-2 fs-5"></i>
+                            <div>
+                                <span class="text-muted small d-block">CONTACT PHONE</span>
+                                <strong id="phoneLabel">+1234567890</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct Connect Action buttons -->
+                    <div class="d-grid gap-2">
+                        <a id="whatsappLink" href="#" class="btn btn-whatsapp rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center" target="_blank">
+                            <i class="bi bi-whatsapp me-2"></i>Contact via WhatsApp
+                        </a>
+                        <a id="emailLink" href="#" class="btn btn-outline-dark rounded-pill py-2 small fw-bold">
+                            <i class="bi bi-envelope me-2"></i>Send Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Listed Services and Reviews -->
+            <div class="col-lg-8">
+                <!-- Services Offered Section -->
+                <div class="mb-5 animate-fade-in">
+                    <h4 class="fw-bold mb-4">Services Offered</h4>
+                    <div id="servicesList" class="row g-3">
+                        <!-- Loaded dynamically -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading services...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Reviews Section -->
+                <div class="animate-fade-in">
+                    <h4 class="fw-bold mb-4">Client Reviews</h4>
+                    <div id="reviewsList" class="row g-3">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Scheduler Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="bookingModalLabel">Schedule Service Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="bookingForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="bookingServiceId">
+                        
+                        <div class="p-3 bg-light rounded-3 mb-4">
+                            <h6 id="bookingServiceTitle" class="fw-bold mb-1 text-primary">Service Title</h6>
+                            <p id="bookingServiceRate" class="text-muted small mb-0">Price: ₹0.00 / Per Hour</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bookingDate" class="form-label small fw-bold text-muted">SELECT DATE & TIME</label>
+                            <input type="datetime-local" class="form-control form-control-custom" id="bookingDate" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bookingNotes" class="form-label small fw-bold text-muted">ADDITIONAL NOTES (OPTIONAL)</label>
+                            <textarea class="form-control form-control-custom" id="bookingNotes" rows="3" placeholder="Describe the job instructions, address details, or queries..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Confirm Booking</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Mock Database of Service Providers for Offline/Demo Mode
+        const mockProviders = {
+            "bb78e762-b2d9-48bb-bb83-8a39e9921f67": {
+                id: "bb78e762-b2d9-48bb-bb83-8a39e9921f67",
+                businessName: "John's Plumbing Express",
+                bio: "Expert plumbing services with over 10 years of experience. We handle emergency leak repairs, pipe replacements, bathroom installation, and drain cleaning. Available 24/7.",
+                city: "New York",
+                address: "42 Wall St, New York, NY 10005",
+                yearsOfExperience: 10,
+                whatsappNumber: "15550199",
+                averageRating: 4.8,
+                user: {
+                    fullName: "John Plumber",
+                    email: "john@plumbingexpress.com",
+                    phone: "+1 (555) 019-9111",
+                    profileImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150"
+                },
+                ratings: [
+                    { ratingValue: 5, comments: "Excellent response time! John fixed our leaking toilet in under 30 minutes.", user: { fullName: "Sarah Green" }, booking: { id: 1001 } },
+                    { ratingValue: 4, comments: "Very professional and clean work. Highly recommended.", user: { fullName: "Michael Scott" }, booking: { id: 1002 } }
+                ],
+                services: [
+                    { id: 101, title: "Emergency Pipe Leak Repair", priceRate: 50.00, duration: "Per Hour", description: "Emergency repair of burst pipes, leaking faucets, clogged drains, and bathroom toilet leakages. Fast response." },
+                    { id: 102, title: "Modern Water Heater Installation", priceRate: 150.00, duration: "Fixed Price", description: "Installation of modern instant water heaters or standard storage geysers. Includes safety valves and electrical check." }
+                ]
+            },
+            "cc78e762-b2d9-48bb-bb83-8a39e9921f68": {
+                id: "cc78e762-b2d9-48bb-bb83-8a39e9921f68",
+                businessName: "Sparky Electrical Solutions",
+                bio: "Licenced residential and commercial electricians. Specialize in smart home integrations, rewiring, lighting fixtures, panel upgrades, and socket installations.",
+                city: "New York",
+                address: "128 Broadway, New York, NY 10006",
+                yearsOfExperience: 8,
+                whatsappNumber: "15550188",
+                averageRating: 4.9,
+                user: {
+                    fullName: "Alice Spark",
+                    email: "alice@sparkyelectrical.com",
+                    phone: "+1 (555) 018-8222",
+                    profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150"
+                },
+                ratings: [
+                    { ratingValue: 5, comments: "Alice upgraded our smart home lighting panel. She was super fast and clear.", user: { fullName: "Jane Doe" }, booking: { id: 1003 } }
+                ],
+                services: [
+                    { id: 201, title: "Smart Home Switch Installation", priceRate: 45.00, duration: "Per Hour", description: "Configure and install smart switches, voice-controlled lighting systems, automated dimmers, and custom wiring panels." }
+                ]
+            },
+            "dd78e762-b2d9-48bb-bb83-8a39e9921f69": {
+                id: "dd78e762-b2d9-48bb-bb83-8a39e9921f69",
+                businessName: "Squeaky Clean Helpers",
+                bio: "Professional home and office cleaning service. Eco-friendly cleaning supplies, fully insured and trained cleaners. We do deep clean, move-in/out, and routine disinfection.",
+                city: "Los Angeles",
+                address: "742 Evergreen Terrace, Los Angeles, CA 90001",
+                yearsOfExperience: 5,
+                whatsappNumber: "15550177",
+                averageRating: 4.7,
+                user: {
+                    fullName: "Robert Cleaner",
+                    email: "robert@squeakyclean.com",
+                    phone: "+1 (555) 017-7333",
+                    profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150"
+                },
+                ratings: [
+                    { ratingValue: 5, comments: "The house looks brand new! Robert did an incredible job scrubbing down the kitchen.", user: { fullName: "Arthur Dent" }, booking: { id: 1004 } }
+                ],
+                services: [
+                    { id: 301, title: "Full 3BHK Home Deep Cleaning", priceRate: 180.00, duration: "Per Service", description: "Complete vacuuming, kitchen scrubbing, bathroom sanitization, floor dusting, sofa steam clean, and window washing." }
+                ]
+            },
+            "ee78e762-b2d9-48bb-bb83-8a39e9921f70": {
+                id: "ee78e762-b2d9-48bb-bb83-8a39e9921f70",
+                businessName: "Timbercraft Woodworks",
+                bio: "Custom carpentry, cabinet repairs, custom shelving, hardwood installations, door hardware fittings, and furniture restorations.",
+                city: "Chicago",
+                address: "505 Michigan Ave, Chicago, IL 60611",
+                yearsOfExperience: 12,
+                whatsappNumber: "15550166",
+                averageRating: 4.6,
+                user: {
+                    fullName: "David Carpenter",
+                    email: "david@timbercraft.com",
+                    phone: "+1 (555) 016-6444",
+                    profileImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150"
+                },
+                ratings: [
+                    { ratingValue: 4, comments: "Repaired our wooden cabinets beautifully. Hinge settings are perfect.", user: { fullName: "Leo Vance" }, booking: { id: 1005 } }
+                ],
+                services: [
+                    { id: 401, title: "Modular Kitchen Cabinet Fixing", priceRate: 65.00, duration: "Per Hour", description: "Wood cabinet repairs, hydraulic hinge adjustments, drawer sliding tracks installation, and custom kitchen woodwork." }
+                ]
+            },
+            "ff78e762-b2d9-48bb-bb83-8a39e9921f71": {
+                id: "ff78e762-b2d9-48bb-bb83-8a39e9921f71",
+                businessName: "Vivid Colors House Painters",
+                bio: "Residential and commercial painting services. Excellent quality finish, masking and cleaning post-job. Interior, exterior, and feature walls.",
+                city: "New York",
+                address: "30 Rockefeller Plaza, New York, NY 10112",
+                yearsOfExperience: 6,
+                whatsappNumber: "15550155",
+                averageRating: 4.7,
+                user: {
+                    fullName: "Mark Painter",
+                    email: "mark@vividcolors.com",
+                    phone: "+1 (555) 015-5555",
+                    profileImage: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150"
+                },
+                ratings: [
+                    { ratingValue: 5, comments: "Super clean painting! Masking was done perfectly. No spots anywhere.", user: { fullName: "Lily Potter" }, booking: { id: 1006 } }
+                ],
+                services: [
+                    { id: 501, title: "Home Exterior/Interior Painting", priceRate: 290.00, duration: "Fixed Price", description: "Full room painting (2 coats of premium emulsion paint) including masking, wall putty repair, and clean post-job service." }
+                ]
+            },
+            "gg78e762-b2d9-48bb-bb83-8a39e9921f72": {
+                id: "gg78e762-b2d9-48bb-bb83-8a39e9921f72",
+                businessName: "Sarah Miller Math Tutoring",
+                bio: "High school math and AP Calculus tutor. 8 years teaching experience. I focus on developing conceptual understanding and solving exam sheets.",
+                city: "Los Angeles",
+                address: "10880 Wilshire Blvd, Los Angeles, CA 90024",
+                yearsOfExperience: 8,
+                whatsappNumber: "15550144",
+                averageRating: 5.0,
+                user: {
+                    fullName: "Sarah Miller",
+                    email: "sarah@millertutoring.com",
+                    phone: "+1 (555) 014-4444",
+                    profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150"
+                },
+                ratings: [
+                    { ratingValue: 5, comments: "Sarah helped my daughter secure an A in AP Calculus. Brilliant teaching style.", user: { fullName: "Robert Peterson" }, booking: { id: 1007 } }
+                ],
+                services: [
+                    { id: 601, title: "AP Calculus & High School Math Tutor", priceRate: 40.00, duration: "Per Hour", description: "Personal tutoring for Calculus, Algebra, Geometry, and SAT Math prep. Weekly progress worksheets and mock exams." }
+                ]
+            },
+            "hh78e762-b2d9-48bb-bb83-8a39e9921f73": {
+                id: "hh78e762-b2d9-48bb-bb83-8a39e9921f73",
+                businessName: "BreezeTech Solutions",
+                bio: "Heating, ventilation, and air conditioning (HVAC) specialists. Offering AC installation, gas refilling, filter cleaning, and duct troubleshooting.",
+                city: "Chicago",
+                address: "233 S Wacker Dr, Chicago, IL 60606",
+                yearsOfExperience: 7,
+                whatsappNumber: "15550133",
+                averageRating: 4.8,
+                user: {
+                    fullName: "Steve Breeze",
+                    email: "steve@breezetech.com",
+                    phone: "+1 (555) 013-3333",
+                    profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+                },
+                ratings: [
+                    { ratingValue: 5, comments: "Steve resolved our AC cooling issue on a hot summer evening. Excellent service.", user: { fullName: "Nancy Wheeler" }, booking: { id: 1008 } }
+                ],
+                services: [
+                    { id: 801, title: "AC Gas Leak Refilling & Service", priceRate: 85.00, duration: "Per Service", description: "Full service checkup, leak testing, pressure checking, gas refilling (R22/R32/R410), and filter cleaning." }
+                ]
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Extract provider ID from query params
+            const params = new URLSearchParams(window.location.search);
+            const providerId = params.get("id");
+
+            if (!providerId) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            loadProviderDetails(providerId);
+
+            document.getElementById("bookingForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                submitBooking();
+            });
+        });
+
+        function loadProviderDetails(id) {
+            fetch(`/api/providers/public/${id}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Verification pending or profile not found.");
+                    return res.json();
+                })
+                .then(p => {
+                    displayProviderDetails(p);
+                    loadServices(id);
+                    renderReviews(p.ratings);
+                })
+                .catch(err => {
+                    console.warn("Using local provider details fallback (Demo Mode):", err);
+                    if (mockProviders[id]) {
+                        const p = mockProviders[id];
+                        displayProviderDetails(p);
+                        renderMockServices(p.services);
+                        renderReviews(p.ratings);
+                    } else {
+                        document.querySelector(".container").innerHTML = `
+                            <div class="text-center py-5">
+                                <i class="bi bi-shield-lock-fill text-warning display-1 mb-3"></i>
+                                <h3>Listing Unavailable</h3>
+                                <p class="text-muted mb-4">${err.message}</p>
+                                <a href="index.html" class="btn btn-primary rounded-pill px-4"><i class="bi bi-arrow-left me-2"></i>Back to Home</a>
+                            </div>
+                        `;
+                    }
+                });
+        }
+
+        function displayProviderDetails(p) {
+            document.getElementById("businessName").textContent = p.businessName || p.user.fullName;
+            document.getElementById("fullName").textContent = "Owner: " + p.user.fullName;
+            document.getElementById("bio").textContent = p.bio || "No biography details added yet.";
+            document.getElementById("locationLabel").textContent = `${p.city}, ${p.address || ''}`;
+            document.getElementById("experienceLabel").textContent = `${p.yearsOfExperience} Years`;
+            document.getElementById("phoneLabel").textContent = p.user.phone || "Unprovided";
+
+            if (p.user.profileImage) {
+                document.getElementById("profileImage").src = p.user.profileImage;
+            }
+
+            // Average Rating
+            const avg = parseFloat(p.averageRating) || 0.0;
+            document.getElementById("ratingValLabel").textContent = avg.toFixed(1);
+            
+            const starsContainer = document.getElementById("starsContainer");
+            starsContainer.innerHTML = "";
+            for (let i = 1; i <= 5; i++) {
+                starsContainer.innerHTML += `<i class="bi bi-star${i <= avg ? '-fill' : ''} text-warning fs-5"></i>`;
+            }
+
+            // Contact integrations
+            if (p.whatsappNumber) {
+                const directText = encodeURIComponent(`Hello ${p.businessName || p.user.fullName}, I found your profile on LocalFinder and want to book your services.`);
+                document.getElementById("whatsappLink").href = `https://wa.me/${p.whatsappNumber}?text=${directText}`;
+                document.getElementById("whatsappLink").classList.remove("disabled");
+            } else {
+                document.getElementById("whatsappLink").classList.add("disabled");
+            }
+            document.getElementById("emailLink").href = `mailto:${p.user.email}`;
+        }
+
+        function loadServices(providerId) {
+            fetch(`/api/services/provider/${providerId}`)
+                .then(res => res.json())
+                .then(services => {
+                    const grid = document.getElementById("servicesList");
+                    grid.innerHTML = "";
+
+                    if (services.length === 0) {
+                        grid.innerHTML = `<p class="text-muted text-center py-4">No active services offered by this provider.</p>`;
+                        return;
+                    }
+
+                    services.forEach(s => {
+                        const item = `
+                            <div class="col-md-6">
+                                <div class="card p-4 border rounded-4 shadow-sm h-100 d-flex flex-column justify-content-between bg-white animate-fade-in">
+                                    <div>
+                                        <h5 class="fw-bold text-dark mb-2">${s.title}</h5>
+                                        <p class="text-muted small">${s.description}</p>
+                                    </div>
+                                    <div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="fw-bold text-primary mb-0">₹${s.priceRate} <span class="small text-muted font-normal">/${s.duration}</span></h5>
+                                            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openBookingModal(${s.id}, '${s.title.replace(/'/g, "\\'")}', ${s.priceRate}, '${s.duration}')">Book Service</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        grid.innerHTML += item;
+                    });
+                })
+                .catch(err => {
+                    console.warn("Could not load services from API, calling mock renderer...");
+                });
+        }
+
+        function renderMockServices(services) {
+            const grid = document.getElementById("servicesList");
+            grid.innerHTML = "";
+
+            if (!services || services.length === 0) {
+                grid.innerHTML = `<p class="text-muted text-center py-4">No active services offered by this provider.</p>`;
+                return;
+            }
+
+            services.forEach(s => {
+                const item = `
+                    <div class="col-md-6">
+                        <div class="card p-4 border rounded-4 shadow-sm h-100 d-flex flex-column justify-content-between bg-white animate-fade-in">
+                            <div>
+                                <h5 class="fw-bold text-dark mb-2">${s.title}</h5>
+                                <p class="text-muted small">${s.description}</p>
+                            </div>
+                            <div>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="fw-bold text-primary mb-0">₹${s.priceRate} <span class="small text-muted font-normal">/${s.duration}</span></h5>
+                                    <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openBookingModal(${s.id}, '${s.title.replace(/'/g, "\\'")}', ${s.priceRate}, '${s.duration}', true)">Book Service</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += item;
+            });
+        }
+
+        function renderReviews(reviews) {
+            const list = document.getElementById("reviewsList");
+            list.innerHTML = "";
+
+            if (!reviews || reviews.length === 0) {
+                list.innerHTML = `<p class="text-muted text-center py-4">No client reviews listed yet.</p>`;
+                return;
+            }
+
+            reviews.forEach(r => {
+                let stars = "";
+                for (let i = 1; i <= 5; i++) {
+                    stars += `<i class="bi bi-star${i <= r.ratingValue ? '-fill' : ''} text-warning small"></i>`;
+                }
+
+                const item = `
+                    <div class="col-12 animate-fade-in">
+                        <div class="card p-3 border rounded-3 shadow-sm bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0">${r.user.fullName}</h6>
+                                <div>${stars}</div>
+                            </div>
+                            <p class="text-muted small mb-0">${r.comments || ''}</p>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += item;
+            });
+        }
+
+        let isCurrentBookingMock = false;
+
+        function openBookingModal(id, title, price, duration, isMock = false) {
+            isCurrentBookingMock = isMock;
+            if (!isLoggedIn()) {
+                window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.pathname + window.location.search);
+                return;
+            }
+            // Enforce customer account for bookings
+            const user = getUser();
+            if (user.role !== "USER") {
+                alert("Only customer accounts are permitted to schedule service bookings.");
+                return;
+            }
+
+            document.getElementById("bookingServiceId").value = id;
+            document.getElementById("bookingServiceTitle").textContent = title;
+            document.getElementById("bookingServiceRate").textContent = `Rate: ₹${price} / ${duration}`;
+            
+            // Set min date to now
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById("bookingDate").min = now.toISOString().slice(0, 16);
+
+            new bootstrap.Modal(document.getElementById('bookingModal')).show();
+        }
+
+        function submitBooking() {
+            const serviceId = parseInt(document.getElementById("bookingServiceId").value);
+            const bookingDate = document.getElementById("bookingDate").value;
+            const notes = document.getElementById("bookingNotes").value;
+
+            if (isCurrentBookingMock) {
+                // Save simulated booking locally
+                const simulatedBookings = JSON.parse(localStorage.getItem("ls_simulated_bookings") || "[]");
+                simulatedBookings.push({
+                    id: Math.floor(Math.random() * 100000),
+                    bookingDate: bookingDate,
+                    notes: notes,
+                    status: "PENDING",
+                    totalPrice: 150.00,
+                    service: {
+                        title: document.getElementById("bookingServiceTitle").textContent,
+                        provider: {
+                            businessName: document.getElementById("businessName").textContent,
+                            user: { fullName: document.getElementById("businessName").textContent }
+                        }
+                    }
+                });
+                localStorage.setItem("ls_simulated_bookings", JSON.stringify(simulatedBookings));
+
+                bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+                alert("[Demo Mode] Service booking request simulated successfully! View it in your dashboard.");
+                window.location.href = "user-dashboard.html?demo=true";
+                return;
+            }
+
+            fetch("/api/user/bookings", {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify({ serviceId, bookingDate, notes })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Could not place booking request.");
+                return res.json();
+            })
+            .then(() => {
+                bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+                alert("Service booking request submitted successfully! Check your email for confirmations.");
+                window.location.href = "user-dashboard.html";
+            })
+            .catch(err => {
+                console.warn("Booking API failed. Simulating local booking fallback (Demo Mode)...");
+                const simulatedBookings = JSON.parse(localStorage.getItem("ls_simulated_bookings") || "[]");
+                simulatedBookings.push({
+                    id: Math.floor(Math.random() * 100000),
+                    bookingDate: bookingDate,
+                    notes: notes,
+                    status: "PENDING",
+                    totalPrice: 150.00,
+                    service: {
+                        title: document.getElementById("bookingServiceTitle").textContent,
+                        provider: {
+                            businessName: document.getElementById("businessName").textContent,
+                            user: { fullName: document.getElementById("businessName").textContent }
+                        }
+                    }
+                });
+                localStorage.setItem("ls_simulated_bookings", JSON.stringify(simulatedBookings));
+
+                bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+                alert("[Demo Mode] API Offline. Service booking request simulated successfully!");
+                window.location.href = "user-dashboard.html?demo=true";
+            });
+        }
+    </script>
+</body>
+</html>
